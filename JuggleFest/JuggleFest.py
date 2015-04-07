@@ -1,4 +1,8 @@
+# Yodle Jugglefest Challenge
+# author @Patrick Wu
+
 import sys, numpy
+from collections import OrderedDict
 
 class Juggler:
 	def __init__(self, H, E, P, name):
@@ -65,15 +69,21 @@ def main():
 			# converts list of split circuits into dict,
 			# where key is the circuit and value is the dot product
 			dots = [lastJuggler.dotProduct(c, circuits) for c in split_circuits]
-				
+			print dots
+
 			# zips these two lists into a dict
 			preferences = dict(zip(split_circuits, dots))
+			
+			# sorts the new dict in descending order based on value
+			d_preferences = OrderedDict(sorted(preferences.items(), key=lambda kv: kv[1], reverse=True))
 
-			lastJuggler.addPreferences(preferences)
+			lastJuggler.addPreferences(d_preferences)
 			jugglers.append(lastJuggler)
 			print lastJuggler 
 
 	# now the real fun begins
-
+	# loop through circuits to find the max
+	# using binary search
+		
 
 main()
