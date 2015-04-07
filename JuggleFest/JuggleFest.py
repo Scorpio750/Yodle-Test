@@ -38,7 +38,7 @@ def main():
 	for line in fs:
 		# construct circuits
 		if line[0] == 'C':
-			name = 'C' + line[3]
+			name = 'C' + line[3: line.find[' ', 4]]
 			H = line[line.index('H') + 2]
 			E = line[line.index('E') + 2]
 			P = line[line.index('P') + 2]
