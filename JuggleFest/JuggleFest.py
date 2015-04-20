@@ -57,7 +57,10 @@ def assignCircuits(jugglers, circuits, cap):
 				jugglers.remove(j)
 			else:
 				for team_member in c.team:
-					if team_member.score[c] 
+					if team_member.score[c] < j.score[c]:
+						c.team.append(j)
+						jugglers.append(team_member)
+						c.team.remove(team_member)
 
 def outputFile(circuits):
 	fs = open('teams.txt', 'w')
