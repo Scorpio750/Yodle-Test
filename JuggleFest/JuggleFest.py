@@ -49,19 +49,6 @@ def match(circuits, name):
 def assignCircuits(jugglers, circuits, cap):
 	print "Assigning circuits..."
 	i = 0
-	"""
-	for c in reversed(circuits):
-		# print c
-		while i < cap:
-			for j in jugglers:
-				for pref in j.preferences:
-					if pref == c.name:
-						c.team.append(j)
-						jugglers.remove(j)
-						i += 1
-		# c.team.sort(key=lambda kv: iter(kv.scores).next(), reverse=True)
-		i = 0
-	"""
 	for j in jugglers:
 		for p in j.preferences:
 			print p
