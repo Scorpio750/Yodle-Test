@@ -3,7 +3,7 @@
 
 import sys, numpy
 from sys import argv
-from collections import OrderedDict
+from collections import OrderedDict, deque
 
 # Classes
 class Juggler:
@@ -53,7 +53,7 @@ def assignCircuits(jugglers, circuits, cap):
 	i, assigned_to_pref = 0, False
 	
 	while len(jugglers) > 0:
-		j = jugglers.pop()
+		j = jugglers.popleft()
 		assigned_to_pref = False
 		print '\nOn '+ str(j)
 		for p in range(len(j.preferences)):
@@ -63,27 +63,20 @@ def assignCircuits(jugglers, circuits, cap):
 			if len(c.team) < cap:
 				print "Assigning " + j.name + " to " + c.name
 				c.team.append(j)
+				c.team.sort()
 				assigned_to_pref = True
 				break
 			else:
 				print "Cycling through team members"
 				for team_member in c.team:
 					print team_member
-					if p < team_member.preferences.index(j.preferences[p]):
-						print j.preferences[p] + ":" + str(p) + " is higher than " + team_member.preferences[team_member.preferences.index(j.preferences[p])] + ":" + str(team_member.preferences.index(j.preferences[p]))
+					if team_member.scores[c.name] < j.scores[c.name]:
 						print "Assigning " + j.name + " to " + c.name
 						c.team.append(j)
 						print "Removing " + team_member.name + " from " + c.name
 						jugglers.append(team_member)
 						c.team.remove(team_member)
-						assigned_to_pref = True
-						break
-					elif team_member.scores[c.name] < j.scores[c.name] and p < team_member.preferences.index(j.preferences[p]):
-						print "Assigning " + j.name + " to " + c.name
-						c.team.append(j)
-						print "Removing " + team_member.name + " from " + c.name
-						jugglers.append(team_member)
-						c.team.remove(team_member)
+						c.team.sort()
 						assigned_to_pref = True
 						break
 				if assigned_to_pref:
@@ -139,7 +132,7 @@ def outputResult(circuits):
 def main():
 	script, filename = argv
 	fs = open(filename)
-	jugglers, circuits = [], []
+	jugglers, circuits = deque([]), []
 
 	# builds the lists of jugglers and circuits
 	for line in fs:
