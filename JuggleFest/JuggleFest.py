@@ -21,8 +21,9 @@ class Juggler:
 	# returns a list of dot products for each circuit
 	def dotProduct(self, circuits):
 		dotProduct, dotProducts = 0, {}
-		# print found
+		# # print found
 		for c in circuits:
+			dotProduct = 0
 			for i in range(len(self.HEP)):
 				dotProduct += int(self.HEP[i]) * int(c.HEP[i])
 				dotProducts[c.name] = dotProduct
@@ -49,31 +50,31 @@ def match(circuits, name):
 			return c
 
 def assignCircuits(jugglers, circuits, cap):
-	print "Assigning circuits..."
+	# print "Assigning circuits..."
 	i, assigned_to_pref = 0, False
 	
 	while len(jugglers) > 0:
 		j = jugglers.popleft()
 		assigned_to_pref = False
-		print '\nOn '+ str(j)
+		# print '\nOn '+ str(j)
 		for p in range(len(j.preferences)):
-			c = circuits[int(j.preferences[p][1])]
-			print 'On preference ' + j.preferences[p]
-			print 'On circuit ' + c.name
+			c = circuits[int(j.preferences[p][1:])]
+			# print 'On preference ' + j.preferences[p]
+			# print 'On circuit ' + c.name
 			if len(c.team) < cap:
-				print "Assigning " + j.name + " to " + c.name
+				# print "Assigning " + j.name + " to " + c.name
 				c.team.append(j)
-				c.team.sort()
+				c.team.sort(key=lambda kv: kv.scores)
 				assigned_to_pref = True
 				break
 			else:
-				print "Cycling through team members"
+				# print "Cycling through team members"
 				for team_member in c.team:
-					print team_member
+					# print team_member
 					if team_member.scores[c.name] < j.scores[c.name]:
-						print "Assigning " + j.name + " to " + c.name
+						# print "Assigning " + j.name + " to " + c.name
 						c.team.append(j)
-						print "Removing " + team_member.name + " from " + c.name
+						# print "Removing " + team_member.name + " from " + c.name
 						jugglers.append(team_member)
 						c.team.remove(team_member)
 						c.team.sort()
@@ -84,36 +85,36 @@ def assignCircuits(jugglers, circuits, cap):
 		# if there isn't room in any of j's preferences, randomly assign him to an unfilled circuit
 		if not assigned_to_pref:
 			circuits.sort(key=lambda kv: len(kv.team))
-			print circuits
+			# print circuits
 			for c in circuits:
 				if len(c.team) < cap:
 					c.team.append(j)
-					print "Assigning " + j.name +  " to " + c.name
+					# print "Assigning " + j.name +  " to " + c.name
 					circuits.sort(key=lambda kv: len(kv.team))
 					break
 				else:
 					for team_member in c.team:
 						if team_member.scores[c.name] < j.scores[c.name]:
-							print "Assigning " + j.name + " to " + c.name
+							# print "Assigning " + j.name + " to " + c.name
 							c.team.append(j)
-							print "Removing " + team_member.name + " from " + c.name
+							# print "Removing " + team_member.name + " from " + c.name
 							jugglers.append(team_member)
 							c.team.remove(team_member)
 							break
 					break
-			circuits.sort(key=lambda kv: int(kv[1]))
-			print circuits
+			# circuits.sort(key=lambda kv: int(kv[1]))
+			# print circuits
 
-def outputFile(circuits):
-	fs = open('teams.txt', 'w')
-	circuits.sort(key=lambda kv: int(kv.name[1]))
+def outputFile(circuits, filename):
+	fs = open(filename, 'w')
+	circuits.sort(key=lambda kv: int(kv.name[1:]))
 	for c in reversed(circuits):
 		fs.write(c.name + ' ')
 		for j in c.team:
 			fs.write(j.name + ' ')
-			# print j.scores
+			# # print j.scores
 			for p in j.preferences:
-				# print key, value
+				# # print key, value
 				fs.write(p + ':' + str(j.scores[p]) + ' ')
 			fs.seek(-1, 1)
 			fs.write(', ')
@@ -123,9 +124,9 @@ def outputFile(circuits):
 	fs.close()
 
 def outputResult(circuits):
-	fs = open('results.txt', 'r')
-	sum_1970 = sum(int(j.name[1]) for j in circuits['C1970'].team)
-	fs.write("C1970: " + str(sum_1970))
+	fs = open('results.txt', 'w')
+	sum_1970 = sum(int(j.name[1:]) for j in circuits[1970].team)
+	fs.write(circuits[1970].name + ': ' + str(sum_1970))
 	fs.close()
 
 
@@ -166,16 +167,23 @@ def main():
 
 			lastJuggler.addLists(split_circuits, scores)
 			jugglers.append(lastJuggler)
-			# print lastJuggler 
+			# # print lastJuggler 
 
 	# now the real fun begins...
 	cap = len(jugglers) / len(circuits)
 	
-	print '---'
+	# print '---'
 	
 	assignCircuits(jugglers, circuits, cap)
-	outputFile(circuits)
 	if filename == 'jugglefest.txt':
+		outputFile(circuits, 'teams.txt')
 		outputResult(circuits)
-	
+	else:
+		outputFile(circuits, 'test_teams.txt')
+		sum_2 = 0
+		for j in circuits[0].team:
+			jnum = int(j.name[1:])
+			sum_2 += jnum
+			print jnum
+		print circuits[0].name + ": " + str(sum_2)
 main()
